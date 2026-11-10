@@ -25,7 +25,6 @@
             <artifactId>atlantafx-base</artifactId>
             <version>3.0.0</version>
         </dependency>
-
         <dependency>
             <groupId>io.github.palexdev</groupId>
             <artifactId>materialfx</artifactId>
