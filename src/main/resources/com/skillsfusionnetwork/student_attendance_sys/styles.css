@@ -1,0 +1,57 @@
+.root-pane {
+    -fx-background-color: #060b19; /* Deep dark blue background */
+}
+
+.logo-title {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.logo-subtitle {
+    -fx-text-fill: #8a9bb8;
+    -fx-font-size: 9px;
+}
+
+.skip-link {
+    -fx-text-fill: #8a9bb8;
+    -fx-font-size: 13px;
+}
+
+.step-indicator {
+    -fx-text-fill: #4e6793;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.main-heading {
+    -fx-text-fill: white;
+    -fx-font-size: 48px;
+    -fx-font-weight: bold;
+}
+
+.sub-heading {
+    -fx-text-fill: #8a9bb8;
+    -fx-font-size: 15px;
+}
+
+.primary-button {
+    -fx-background-color: #1a66ff;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-padding: 12px 28px;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: #004ecc;
+}
+
+.scanner-card {
+    -fx-background-color: #0b1429;
+    -fx-background-radius: 16px;
+    -fx-border-color: #172647;
+    -fx-border-radius: 16px;
+}

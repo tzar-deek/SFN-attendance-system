@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1200.0" stylesheets="@styles.css" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skillsfusionnetwork.student_attendance_sys.IntroController">
+    <children>
+        <!-- Top Navigation -->
+        <HBox alignment="CENTER_LEFT" layoutX="60.0" layoutY="40.0" spacing="15.0">
+            <ImageView fx:id="logoImage" fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true" />
+            <VBox>
+                <Label text="SFN" styleClass="logo-title" />
+                <Label text="ATTENDANCE SYSTEM" styleClass="logo-subtitle" />
+            </VBox>
+        </HBox>
+
+        <Hyperlink fx:id="skipLink" layoutX="1040.0" layoutY="45.0" text="Skip introduction" styleClass="skip-link" />
+
+        <!-- Left Content: Heading & Action -->
+        <VBox layoutX="60.0" layoutY="240.0" spacing="25.0" prefWidth="550.0">
+            <Label text="02   ZKTECO 9500 READY" styleClass="step-indicator" />
+            <Label text="Precise fingerprint verification." styleClass="main-heading" wrapText="true" />
+            <Label text="The ZKTeco 9500 captures and verifies fingerprints instantly for accurate attendance records." styleClass="sub-heading" wrapText="true" />
+
+            <Button fx:id="continueButton1" mnemonicParsing="false" text="Continue  &gt;" styleClass="primary-button" />
+        </VBox>
+
+        <!-- Right Content: Scanner Graphic Card & Device Status Badge -->
+        <Pane layoutX="650.0" layoutY="140.0" prefWidth="500.0" prefHeight="480.0">
+            <children>
+                <Pane layoutX="50.0" layoutY="40.0" prefWidth="420.0" prefHeight="410.0" styleClass="scanner-card">
+                    <children>
+                        <ImageView fx:id="scannerImage" layoutX="60.0" layoutY="50.0" fitHeight="300.0" fitWidth="300.0" preserveRatio="true" />
+                    </children>
+                </Pane>
+                <!-- Connected Device Badge -->
+                <VBox layoutX="310.0" layoutY="380.0" styleClass="device-badge" prefWidth="180.0" spacing="4.0">
+                    <children>
+                        <Label text="CONNECTED DEVICE" styleClass="device-badge-title" />
+                        <Label text="ZKTeco 9500 Fingerprint Scanner" styleClass="device-badge-name" />
+                    </children>
+                </VBox>
+            </children>
+        </Pane>
+
+        <!-- Bottom Pagination Indicator -->
+        <HBox layoutX="60.0" layoutY="640.0" spacing="8.0" alignment="CENTER_LEFT">
+            <children>
+                <Pane prefWidth="24.0" prefHeight="6.0" styleClass="pagination-dot-inactive" />
+                <Pane prefWidth="24.0" prefHeight="6.0" styleClass="pagination-dot-active" />
+                <Pane prefWidth="8.0" prefHeight="6.0" styleClass="pagination-dot-inactive" />
+            </children>
+        </HBox>
+    </children>
+</AnchorPane>

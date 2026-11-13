@@ -11,6 +11,7 @@ module com.skillsfusionnetwork.student_attendance_sys {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires javafx.graphics;
 
     opens com.skillsfusionnetwork.student_attendance_sys to javafx.fxml;
     exports com.skillsfusionnetwork.student_attendance_sys;

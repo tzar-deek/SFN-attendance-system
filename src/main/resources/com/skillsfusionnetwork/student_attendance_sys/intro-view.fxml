@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1200.0" stylesheets="@styles.css" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skillsfusionnetwork.student_attendance_sys.IntroController">
+    <children>
+        <!-- Top Navigation -->
+        <HBox alignment="CENTER_LEFT" layoutX="60.0" layoutY="40.0" spacing="15.0">
+            <ImageView fx:id="fingerIcon"  fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                <image >
+                    <Image url= "@images/fingerIcon.png"/>
+                </image>
+            </ImageView>
+            <VBox>
+                <Label text="SFN" styleClass="logo-title" />
+                <Label text="ATTENDANCE SYSTEM" styleClass="logo-subtitle" />
+            </VBox>
+        </HBox>
+
+        <Hyperlink fx:id="skipLink" layoutX="1040.0" layoutY="45.0" text="Skip introduction" styleClass="skip-link" />
+
+        <!-- Left Content: Heading & Action -->
+        <VBox layoutX="60.0" layoutY="240.0" spacing="25.0" prefWidth="550.0">
+            <Label text="01   SFN ATTENDANCE SYSTEM" styleClass="step-indicator" />
+            <Label text="Attendance starts with a touch." styleClass="main-heading" wrapText="true" />
+            <Label text="Fast, reliable biometric check-ins built for every event and every attendee." styleClass="sub-heading" wrapText="true" />
+
+            <Button fx:id="continueButton" mnemonicParsing="false" text="Continue  >" styleClass="primary-button" />
+        </VBox>
+
+        <!-- Right Content: Scanner Graphic Card -->
+        <Pane layoutX="700.0" layoutY="180.0" prefWidth="420.0" prefHeight="450.0" styleClass="scanner-card">
+            <children>
+                <!-- Add your scanner image or pane elements here -->
+                <ImageView fx:id="scannerImage" layoutX="60.0" layoutY="50.0" fitHeight="300.0" fitWidth="300.0" preserveRatio="true" />
+            </children>
+        </Pane>
+    </children>
+</AnchorPane>

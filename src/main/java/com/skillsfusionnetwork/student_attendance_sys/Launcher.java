@@ -13,8 +13,8 @@ public class Launcher extends Application {
         Application.setUserAgentStylesheet(new CupertinoDark().getUserAgentStylesheet());
 
         // 2. Load your FXML / Scene with corrected arguments
-        FXMLLoader fxmlLoader = new FXMLLoader(Launcher.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+        FXMLLoader fxmlLoader = new FXMLLoader(Launcher.class.getResource("intro-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 1200, 600);
 
         stage.setTitle("SFN Attendance System");
         stage.setScene(scene);
