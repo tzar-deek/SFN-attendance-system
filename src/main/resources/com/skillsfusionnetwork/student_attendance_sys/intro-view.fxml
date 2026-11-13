@@ -8,7 +8,11 @@
     <children>
         <!-- Top Navigation -->
         <HBox alignment="CENTER_LEFT" layoutX="60.0" layoutY="40.0" spacing="15.0">
-            <ImageView fx:id="logoImage" fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="fingerIcon"  fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                <image >
+                    <Image url= "@images/fingerIcon.png"/>
+                </image>
+            </ImageView>
             <VBox>
                 <Label text="SFN" styleClass="logo-title" />
                 <Label text="ATTENDANCE SYSTEM" styleClass="logo-subtitle" />
