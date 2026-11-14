@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1200.0" stylesheets="@styles.css" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skillsfusionnetwork.student_attendance_sys.LoginController">
+    <children>
+        <!-- Top Navigation -->
+        <HBox alignment="CENTER_LEFT" layoutX="60.0" layoutY="40.0" spacing="15.0">
+            <ImageView fx:id="fingerIcon" fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@images/fingerIcon.png"/>
+                </image>
+            </ImageView>
+            <VBox>
+                <Label text="SFN" styleClass="logo-title" />
+                <Label text="ATTENDANCE SYSTEM" styleClass="logo-subtitle" />
+            </VBox>
+        </HBox>
+
+        <!-- Center Login Card Container -->
+        <VBox alignment="CENTER" layoutX="400.0" layoutY="180.0" prefWidth="400.0" spacing="20.0" styleClass="scanner-card">
+            <children>
+                <Label text="Welcome Back" styleClass="main-heading" />
+                <Label text="Sign in to access the attendance system" styleClass="sub-heading" wrapText="true" />
+
+                <TextField fx:id="usernameField" promptText="Username or ID" prefHeight="40.0" />
+                <PasswordField fx:id="passwordField" promptText="Password" prefHeight="40.0" />
+
+                <Button fx:id="loginButton" text="Sign In" prefHeight="40.0" prefWidth="200.0" styleClass="primary-button" />
+
+                <Label fx:id="errorLabel" textFill="#ff6b6b" styleClass="error-label" />
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
