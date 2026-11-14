@@ -13,8 +13,8 @@ public class IntroController {
     @FXML private Hyperlink skipLink;
     @FXML private Button continueButton1;
     @FXML private ImageView fingerIcon;
-    @FXML
 
+    @FXML
     public void initialize() {
         // Page 1 -> Page 2 (intro-view1.fxml)
         if (continueButton != null && continueButton.getText().contains("Continue")) {
@@ -32,11 +32,19 @@ public class IntroController {
             });
         }
 
-        // Skip link from any intro page
+        // Page 3 -> Login Page (login.fxml)
+        if (openSystemButton != null) {
+            openSystemButton.setOnAction(event -> {
+                Stage stage = (Stage) openSystemButton.getScene().getWindow();
+                SceneManager.switchScene(stage, "login.fxml");
+            });
+        }
+
+        // Skip link from any intro page directly to the Login Page
         if (skipLink != null) {
             skipLink.setOnAction(event -> {
                 Stage stage = (Stage) skipLink.getScene().getWindow();
-                // SceneManager.switchScene(stage, "dashboard.fxml");
+                SceneManager.switchScene(stage, "login.fxml");
             });
         }
     }
