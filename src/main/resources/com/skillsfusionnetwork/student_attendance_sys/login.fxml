@@ -42,7 +42,7 @@
 
                 <HBox alignment="CENTER" spacing="5.0" style="-fx-padding: 10px 0 0 0;">
                     <children>
-                        <Label text="New to SFN?" styleClass="sub-heading" />
+                        <Label text="New to SFN attendance system?" styleClass="sub-heading" />
                         <Hyperlink fx:id="gotoRegisterLink" text="Create an account" styleClass="skip-link" />
                     </children>
                 </HBox>
