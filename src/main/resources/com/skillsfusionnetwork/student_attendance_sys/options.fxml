@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1200.0" stylesheets="@styles.css" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skillsfusionnetwork.student_attendance_sys.OptionsController">
+    <children>
+        <!-- Top Navigation -->
+        <HBox alignment="CENTER_LEFT" layoutX="60.0" layoutY="40.0" spacing="15.0">
+            <ImageView fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@images/fingerIcon.png"/>
+                </image>
+            </ImageView>
+            <VBox>
+                <Label text="SFN" styleClass="logo-title" />
+                <Label text="ATTENDANCE SYSTEM" styleClass="logo-subtitle" />
+            </VBox>
+        </HBox>
+
+        <!-- Center Selection Cards Layout -->
+        <HBox alignment="CENTER" layoutX="250.0" layoutY="180.0" spacing="60.0">
+            <children>
+                <!-- Create Account Option -->
+                <VBox alignment="CENTER" spacing="15.0" style="-fx-cursor: hand;">
+                    <children>
+                        <!-- Box containing the image -->
+                        <VBox fx:id="createAccountCard" alignment="CENTER" prefHeight="260.0" prefWidth="260.0" styleClass="scanner-card">
+                            <children>
+                                <ImageView fitHeight="120.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@images/createAccountIcon.png"/>
+                                    </image>
+                                </ImageView>
+                            </children>
+                        </VBox>
+                        <!-- Nameplate Label underneath -->
+                        <Label text="Create an Account" styleClass="main-heading" style="-fx-font-size: 18px;" />
+                    </children>
+                </VBox>
+
+                <!-- Login Option -->
+                <VBox alignment="CENTER" spacing="15.0" style="-fx-cursor: hand;">
+                    <children>
+                        <!-- Box containing the image -->
+                        <VBox fx:id="loginCard" alignment="CENTER" prefHeight="260.0" prefWidth="260.0" styleClass="scanner-card">
+                            <children>
+                                <ImageView fitHeight="120.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@images/loginIcon.png"/>
+                                    </image>
+                                </ImageView>
+                            </children>
+                        </VBox>
+                        <!-- Nameplate Label underneath -->
+                        <Label text="Login" styleClass="main-heading" style="-fx-font-size: 18px;" />
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </children>
+</AnchorPane>

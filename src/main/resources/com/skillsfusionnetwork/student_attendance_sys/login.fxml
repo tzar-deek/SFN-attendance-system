@@ -3,6 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
 
 <AnchorPane prefHeight="700.0" prefWidth="1200.0" stylesheets="@styles.css" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skillsfusionnetwork.student_attendance_sys.LoginController">
     <children>
@@ -20,17 +21,31 @@
         </HBox>
 
         <!-- Center Login Card Container -->
-        <VBox alignment="CENTER" layoutX="400.0" layoutY="180.0" prefWidth="400.0" spacing="20.0" styleClass="scanner-card">
+        <VBox alignment="CENTER_LEFT" layoutX="350.0" layoutY="120.0" prefWidth="500.0" spacing="20.0" styleClass="scanner-card">
+            <padding>
+                <Insets top="40.0" right="50.0" bottom="40.0" left="50.0"/>
+            </padding>
             <children>
-                <Label text="Welcome Back" styleClass="main-heading" />
-                <Label text="Sign in to access the attendance system" styleClass="sub-heading" wrapText="true" />
+                <Label text="SFN ADMINISTRATOR PORTAL" styleClass="step-indicator" />
+                <Label text="Welcome back" styleClass="main-heading" />
+                <Label text="Sign in to manage programs and attendance." styleClass="sub-heading" wrapText="true" />
 
-                <TextField fx:id="usernameField" promptText="Username or ID" prefHeight="40.0" />
-                <PasswordField fx:id="passwordField" promptText="Password" prefHeight="40.0" />
+                <Label text="Username or ID" styleClass="sub-heading" style="-fx-font-size: 12px;" />
+                <TextField fx:id="usernameField" promptText="admin123" prefHeight="40.0" maxWidth="Infinity" />
 
-                <Button fx:id="loginButton" text="Sign In" prefHeight="40.0" prefWidth="200.0" styleClass="primary-button" />
+                <Label text="Password" styleClass="sub-heading" style="-fx-font-size: 12px;" />
+                <PasswordField fx:id="passwordField" promptText="••••••••" prefHeight="40.0" maxWidth="Infinity" />
+
+                <Button fx:id="loginButton" text="Sign in to dashboard  >" prefHeight="40.0" maxWidth="Infinity" styleClass="primary-button" />
 
                 <Label fx:id="errorLabel" textFill="#ff6b6b" styleClass="error-label" />
+
+                <HBox alignment="CENTER" spacing="5.0" style="-fx-padding: 10px 0 0 0;">
+                    <children>
+                        <Label text="New to SFN?" styleClass="sub-heading" />
+                        <Hyperlink fx:id="gotoRegisterLink" text="Create an account" styleClass="skip-link" />
+                    </children>
+                </HBox>
             </children>
         </VBox>
     </children>

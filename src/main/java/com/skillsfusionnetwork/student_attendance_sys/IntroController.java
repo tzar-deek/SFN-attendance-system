@@ -17,7 +17,7 @@ public class IntroController {
     @FXML
     public void initialize() {
         // Page 1 -> Page 2 (intro-view1.fxml)
-        if (continueButton != null && continueButton.getText().contains("Continue")) {
+        if (continueButton != null) {
             continueButton.setOnAction(event -> {
                 Stage stage = (Stage) continueButton.getScene().getWindow();
                 SceneManager.switchScene(stage, "intro-view1.fxml");
@@ -25,26 +25,26 @@ public class IntroController {
         }
 
         // Page 2 -> Page 3 (intro-view2.fxml)
-        if (continueButton1 != null && continueButton1.getText().contains("Continue")) {
+        if (continueButton1 != null) {
             continueButton1.setOnAction(event -> {
                 Stage stage = (Stage) continueButton1.getScene().getWindow();
                 SceneManager.switchScene(stage, "intro-view2.fxml");
             });
         }
 
-        // Page 3 -> Login Page (login.fxml)
+        // Page 3 -> Options Page (auth-options.fxml)
         if (openSystemButton != null) {
             openSystemButton.setOnAction(event -> {
                 Stage stage = (Stage) openSystemButton.getScene().getWindow();
-                SceneManager.switchScene(stage, "login.fxml");
+                SceneManager.switchScene(stage, "Options.fxml");
             });
         }
 
-        // Skip link from any intro page directly to the Login Page
+        // Skip link from any intro page -> Options Page
         if (skipLink != null) {
             skipLink.setOnAction(event -> {
                 Stage stage = (Stage) skipLink.getScene().getWindow();
-                SceneManager.switchScene(stage, "login.fxml");
+                SceneManager.switchScene(stage, "Options.fxml");
             });
         }
     }
