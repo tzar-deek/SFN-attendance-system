@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1200.0" stylesheets="@styles.css" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skillsfusionnetwork.student_attendance_sys.RegisterController">
+    <children>
+        <!-- Top Navigation -->
+        <HBox alignment="CENTER_LEFT" layoutX="60.0" layoutY="40.0" spacing="15.0">
+            <ImageView fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@images/fingerIcon.png"/>
+                </image>
+            </ImageView>
+            <VBox>
+                <Label text="SFN" styleClass="logo-title" />
+                <Label text="ATTENDANCE SYSTEM" styleClass="logo-subtitle" />
+            </VBox>
+        </HBox>
+
+        <!-- Center Registration Card Container (Widened to 560px and moved left to center it) -->
+        <VBox alignment="CENTER_LEFT" layoutX="320.0" layoutY="80.0" prefWidth="560.0" spacing="12.0" styleClass="scanner-card">
+            <padding>
+                <Insets top="30.0" right="50.0" bottom="30.0" left="50.0"/>
+            </padding>
+            <children>
+                <Label text="SFN ADMINISTRATOR PORTAL" styleClass="step-indicator" />
+
+                <!-- Main Heading with wrapText enabled so it displays fully -->
+                <Label text="Create your account" styleClass="main-heading" wrapText="true" style="-fx-font-size: 32px;" />
+
+                <Label text="Set up an attendance manager account before signing in." styleClass="sub-heading" wrapText="true" />
+
+                <Label text="Username (Alphanumeric)" styleClass="sub-heading" style="-fx-font-size: 12px;" />
+                <TextField fx:id="usernameField" promptText="e.g. admin123" prefHeight="40.0" maxWidth="Infinity" />
+
+                <Label text="Password" styleClass="sub-heading" style="-fx-font-size: 12px;" />
+                <PasswordField fx:id="passwordField" promptText="Minimum 8 characters" prefHeight="40.0" maxWidth="Infinity" />
+
+                <Label text="Confirm Password" styleClass="sub-heading" style="-fx-font-size: 12px;" />
+                <PasswordField fx:id="confirmPasswordField" promptText="Re-enter password" prefHeight="40.0" maxWidth="Infinity" />
+
+                <Button fx:id="registerButton" text="Create account  >" prefHeight="40.0" maxWidth="Infinity" styleClass="primary-button" />
+
+                <Label fx:id="errorLabel" textFill="#2bff6c" styleClass="error-label" />
+
+                <HBox alignment="CENTER" spacing="5.0" style="-fx-padding: 5px 0 0 0;" maxWidth="Infinity">
+                    <children>
+                        <Label text="Already registered?" styleClass="sub-heading" />
+                        <Hyperlink fx:id="gotoLoginLink" text="Sign in" styleClass="skip-link" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
