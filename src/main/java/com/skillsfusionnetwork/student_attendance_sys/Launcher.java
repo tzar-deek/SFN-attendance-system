@@ -19,7 +19,7 @@ public class Launcher extends Application {
         stage.setTitle("SFN Attendance System");
         stage.setScene(scene);
         stage.show();
-    }
+    } 
 
     public static void main(String[] args) {
         launch();

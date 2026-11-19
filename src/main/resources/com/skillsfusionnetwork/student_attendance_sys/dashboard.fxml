@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<StackPane prefHeight="700.0" prefWidth="1200.0" stylesheets="@dashboard.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skillsfusionnetwork.student_attendance_sys.DashboardController">
+    <children>
+        <!-- Main Application Shell -->
+        <BorderPane fx:id="mainLayout">
+            <!-- Collapsible Left Sidebar -->
+            <left>
+                <VBox fx:id="sidebar" prefWidth="240.0" styleClass="sidebar" spacing="10.0">
+                    <padding>
+                        <Insets top="24.0" right="16.0" bottom="24.0" left="16.0"/>
+                    </padding>
+                    <children>
+                        <!-- Brand & Collapse Toggle -->
+                        <HBox alignment="CENTER_LEFT" spacing="12.0">
+                            <Button fx:id="toggleSidebarBtn" text="☰" styleClass="sidebar-toggle-btn"/>
+                            <VBox fx:id="brandTextBox">
+                                <Label text="SFN" styleClass="brand-title"/>
+                                <Label text="ATTENDANCE SYSTEM" styleClass="brand-subtitle"/>
+                            </VBox>
+                        </HBox>
+
+                        <Label fx:id="workspaceHeader" text="WORKSPACE" styleClass="nav-section-header"/>
+                        <Button fx:id="navOverviewBtn" text="⊞  Overview" maxWidth="Infinity" alignment="CENTER_LEFT" styleClass="nav-btn, nav-btn-active"/>
+
+                        <HBox alignment="CENTER_LEFT" maxWidth="Infinity">
+                            <Button fx:id="navProgramsBtn" text="👥  Programs" HBox.hgrow="ALWAYS" maxWidth="Infinity" alignment="CENTER_LEFT" styleClass="nav-btn"/>
+                            <Label fx:id="sidebarProgramBadge" text="0" styleClass="nav-badge"/>
+                        </HBox>
+
+                        <Label fx:id="managementHeader" text="MANAGEMENT" styleClass="nav-section-header">
+                            <VBox.margin><Insets top="16.0"/></VBox.margin>
+                        </Label>
+
+                        <Button fx:id="navReportsBtn" text="📊  Reports" maxWidth="Infinity" alignment="CENTER_LEFT" styleClass="nav-btn"/>
+                        <Button fx:id="navSettingsBtn" text="⚙  Settings" maxWidth="Infinity" alignment="CENTER_LEFT" styleClass="nav-btn"/>
+
+                        <Region VBox.vgrow="ALWAYS"/>
+
+                        <!-- Interactive Scanner Status Widget in Sidebar -->
+                        <VBox fx:id="scannerStatusBox" spacing="4.0" styleClass="sidebar-scanner-box">
+                            <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/></padding>
+                            <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                <Label text="🖨" styleClass="scanner-icon-label"/>
+                                <VBox>
+                                    <Label text="ZKTeco 9500" styleClass="scanner-title-label"/>
+                                    <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                        <Circle fx:id="sidebarStatusCircle" radius="3.5" fill="#22c55e"/>
+                                        <Label fx:id="sidebarStatusLabel" text="Connected" styleClass="scanner-status-label"/>
+                                    </HBox>
+                                </VBox>
+                            </HBox>
+                        </VBox>
+
+                        <!-- User Profile Footer -->
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="sidebar-footer">
+                            <padding><Insets top="12.0" right="8.0" bottom="8.0" left="8.0"/></padding>
+                            <Label fx:id="sidebarAvatarLabel" text="AD" styleClass="avatar-circle"/>
+                            <VBox fx:id="sidebarUserBox" HBox.hgrow="ALWAYS">
+                                <Label fx:id="sidebarUsernameLabel" text="Admin" styleClass="sidebar-user-name"/>
+                                <Label text="Attendance manager" styleClass="sidebar-user-role"/>
+                            </VBox>
+                            <Button fx:id="logoutBtn" text="↪" styleClass="logout-btn"/>
+                        </HBox>
+                    </children>
+                </VBox>
+            </left>
+
+            <!-- Right Main Content Area -->
+            <center>
+                <VBox styleClass="content-area">
+                    <HBox alignment="CENTER_LEFT" spacing="15.0" styleClass="top-header">
+                        <padding><Insets top="16.0" right="32.0" bottom="16.0" left="32.0"/></padding>
+                        <VBox HBox.hgrow="ALWAYS">
+                            <Label text="SFN Attendance System" styleClass="header-title"/>
+                            <Label text="Program &amp; participant management" styleClass="header-subtitle"/>
+                        </VBox>
+                        <Button fx:id="openParticipantModalBtn" text="+ Add participant" styleClass="btn-secondary"/>
+                        <Button fx:id="openProgramModalBtn" text="+ Register program" styleClass="btn-primary"/>
+                        <Label fx:id="topAvatarLabel" text="AD" styleClass="top-avatar-circle"/>
+                    </HBox>
+
+                    <!-- Dynamic Page Container -->
+                    <StackPane fx:id="pageContainer" VBox.vgrow="ALWAYS">
+                        <padding><Insets top="28.0" right="32.0" bottom="28.0" left="32.0"/></padding>
+                        <children>
+                            <!-- PAGE 1: OVERVIEW -->
+                            <ScrollPane fx:id="overviewPage" fitToWidth="true" styleClass="transparent-scroll">
+                                <content>
+                                    <VBox spacing="24.0">
+                                        <VBox spacing="4.0">
+                                            <Label text="ATTENDANCE OVERVIEW" styleClass="eyebrow-text"/>
+                                            <Label fx:id="greetingLabel" text="Good morning, Admin" styleClass="page-hero-title"/>
+                                            <Label text="Manage your programs and participant enrollment." styleClass="muted-subtitle"/>
+                                        </VBox>
+
+                                        <HBox spacing="20.0">
+                                            <VBox spacing="8.0" HBox.hgrow="ALWAYS" styleClass="metric-card">
+                                                <Label text="REGISTERED PROGRAMS" styleClass="metric-label"/>
+                                                <Label fx:id="programCountLabel" text="0" styleClass="metric-value"/>
+                                                <Label text="Owned by your account" styleClass="metric-hint"/>
+                                            </VBox>
+                                            <VBox spacing="8.0" HBox.hgrow="ALWAYS" styleClass="metric-card">
+                                                <Label text="TOTAL PARTICIPANTS" styleClass="metric-label"/>
+                                                <Label fx:id="participantCountLabel" text="0" styleClass="metric-value"/>
+                                                <Label text="Across all programs" styleClass="metric-hint"/>
+                                            </VBox>
+                                        </HBox>
+
+                                        <VBox spacing="12.0">
+                                            <HBox alignment="CENTER_LEFT">
+                                                <VBox HBox.hgrow="ALWAYS">
+                                                    <Label text="Your programs" styleClass="section-title"/>
+                                                    <Label text="Click a program or register a new one to begin" styleClass="muted-subtitle"/>
+                                                </VBox>
+                                                <Hyperlink fx:id="inlineRegisterProgramLink" text="Register new program  &gt;" styleClass="action-link"/>
+                                            </HBox>
+
+                                            <VBox fx:id="emptyProgramsBox" alignment="CENTER" spacing="8.0" styleClass="empty-state-card">
+                                                <Label text="No programs registered yet" styleClass="empty-title"/>
+                                                <Label text="Click '+ Register program' above to create your first course." styleClass="muted-subtitle"/>
+                                            </VBox>
+
+                                            <VBox fx:id="overviewProgramsList" spacing="12.0" visible="false" managed="false"/>
+                                        </VBox>
+                                    </VBox>
+                                </content>
+                            </ScrollPane>
+
+                            <!-- PAGE 2: PROGRAMS DIRECTORY -->
+                            <ScrollPane fx:id="programsPage" fitToWidth="true" visible="false" managed="false" styleClass="transparent-scroll">
+                                <content>
+                                    <VBox spacing="20.0">
+                                        <HBox alignment="CENTER_LEFT">
+                                            <VBox HBox.hgrow="ALWAYS" spacing="4.0">
+                                                <Label text="DIRECTORY" styleClass="eyebrow-text"/>
+                                                <Label text="Registered Programs" styleClass="page-hero-title"/>
+                                                <Label text="All active courses and enrolled participant counts." styleClass="muted-subtitle"/>
+                                            </VBox>
+                                            <Button fx:id="programsPageAddBtn" text="+ Register program" styleClass="btn-primary"/>
+                                        </HBox>
+                                        <VBox fx:id="allProgramsList" spacing="12.0"/>
+                                    </VBox>
+                                </content>
+                            </ScrollPane>
+
+                            <!-- PAGE 3: REPORTS -->
+                            <VBox fx:id="reportsPage" alignment="CENTER" spacing="12.0" visible="false" managed="false" styleClass="empty-state-card">
+                                <Label text="MANAGEMENT" styleClass="eyebrow-text"/>
+                                <Label text="Attendance Reports" styleClass="page-hero-title"/>
+                                <Label text="Exportable attendance logs and analytics will appear here in a future update." styleClass="muted-subtitle"/>
+                            </VBox>
+
+                            <!-- PAGE 4: SETTINGS -->
+                            <VBox fx:id="settingsPage" alignment="CENTER" spacing="12.0" visible="false" managed="false" styleClass="empty-state-card">
+                                <Label text="MANAGEMENT" styleClass="eyebrow-text"/>
+                                <Label text="System Settings" styleClass="page-hero-title"/>
+                                <Label text="Account preferences and portal configuration will be available here." styleClass="muted-subtitle"/>
+                            </VBox>
+                        </children>
+                    </StackPane>
+                </VBox>
+            </center>
+        </BorderPane>
+
+        <!-- ========================================================= -->
+        <!-- MODAL 1: REGISTER A NEW PROGRAM                           -->
+        <!-- ========================================================= -->
+        <StackPane fx:id="programModalOverlay" visible="false" managed="false" styleClass="modal-backdrop">
+            <VBox maxWidth="560.0" maxHeight="480.0" spacing="16.0" styleClass="modal-card">
+                <padding><Insets top="28.0" right="32.0" bottom="28.0" left="32.0"/></padding>
+                <HBox alignment="CENTER_LEFT">
+                    <VBox HBox.hgrow="ALWAYS" spacing="2.0">
+                        <Label text="SFN ATTENDANCE" styleClass="eyebrow-text"/>
+                        <Label text="Register a new program" styleClass="modal-title"/>
+                        <Label text="Create an event and define when and where it runs." styleClass="muted-subtitle"/>
+                    </VBox>
+                    <Button fx:id="closeProgramModalBtn" text="✕" styleClass="modal-close-btn"/>
+                </HBox>
+
+                <VBox spacing="6.0">
+                    <Label text="Program name" styleClass="field-label"/>
+                    <TextField fx:id="programNameInput" promptText="e.g. Digital Skills Bootcamp" styleClass="modal-input"/>
+                </VBox>
+
+                <VBox spacing="6.0">
+                    <Label text="Venue" styleClass="field-label"/>
+                    <TextField fx:id="programVenueInput" promptText="e.g. Innovation Hall" styleClass="modal-input"/>
+                </VBox>
+
+                <HBox spacing="16.0">
+                    <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                        <Label text="Start date" styleClass="field-label"/>
+                        <DatePicker fx:id="programStartDate" promptText="dd/mm/yyyy" maxWidth="Infinity" styleClass="modal-datepicker"/>
+                    </VBox>
+                    <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                        <Label text="End date" styleClass="field-label"/>
+                        <DatePicker fx:id="programEndDate" promptText="dd/mm/yyyy" maxWidth="Infinity" styleClass="modal-datepicker"/>
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="6.0">
+                    <Label text="Description" styleClass="field-label"/>
+                    <TextArea fx:id="programDescInput" promptText="Brief description of this program..." prefRowCount="3" wrapText="true" styleClass="modal-textarea"/>
+                </VBox>
+
+                <Label fx:id="programModalError" textFill="#ef4444" style="-fx-font-size: 12px;"/>
+
+                <HBox alignment="CENTER_RIGHT" spacing="12.0">
+                    <Button fx:id="cancelProgramModalBtn" text="Cancel" styleClass="btn-secondary"/>
+                    <Button fx:id="submitProgramBtn" text="Register program" styleClass="btn-primary"/>
+                </HBox>
+            </VBox>
+        </StackPane>
+
+        <!-- ========================================================= -->
+        <!-- MODAL 2: ONBOARD PARTICIPANT WITH 4 FINGERPRINTS          -->
+        <!-- ========================================================= -->
+        <StackPane fx:id="participantModalOverlay" visible="false" managed="false" styleClass="modal-backdrop">
+            <VBox maxWidth="580.0" maxHeight="640.0" spacing="14.0" styleClass="modal-card">
+                <padding><Insets top="24.0" right="28.0" bottom="24.0" left="28.0"/></padding>
+                <HBox alignment="CENTER_LEFT">
+                    <VBox HBox.hgrow="ALWAYS" spacing="2.0">
+                        <Label text="SFN ATTENDANCE" styleClass="eyebrow-text"/>
+                        <Label text="Onboard participant" styleClass="modal-title"/>
+                        <Label text="Add personal details and enroll 4 fingerprints using ZKTeco 9500." styleClass="muted-subtitle"/>
+                    </VBox>
+                    <Button fx:id="closeParticipantModalBtn" text="✕" styleClass="modal-close-btn"/>
+                </HBox>
+
+                <HBox spacing="14.0">
+                    <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                        <Label text="Participant name" styleClass="field-label"/>
+                        <TextField fx:id="participantNameInput" promptText="Full legal name" styleClass="modal-input"/>
+                    </VBox>
+                    <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                        <Label text="Program" styleClass="field-label"/>
+                        <ComboBox fx:id="participantProgramCombo" promptText="Select a program" maxWidth="Infinity" styleClass="modal-combo"/>
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="5.0">
+                    <Label text="Phone number" styleClass="field-label"/>
+                    <HBox spacing="8.0" alignment="CENTER_LEFT">
+                        <Label text="+234" styleClass="phone-prefix"/>
+                        <TextField fx:id="participantPhoneInput" promptText="801 234 5678" HBox.hgrow="ALWAYS" styleClass="modal-input"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Fingerprint Enrollment Section -->
+                <VBox spacing="8.0">
+                    <Label text="Fingerprint enrollment" styleClass="field-label"/>
+                    <Label text="Capture two fingers from each hand using the ZKTeco 9500[cite: 8]." styleClass="muted-subtitle"/>
+
+                    <GridPane hgap="10.0" vgap="10.0">
+                        <!-- Left Thumb -->
+                        <VBox fx:id="leftThumbCard" styleClass="finger-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <Label text="LEFT HAND" styleClass="finger-hand-label"/>
+                            <Label text="Thumb finger" styleClass="finger-name-label"/>
+                            <Label fx:id="leftThumbStatus" text="Tap to capture" styleClass="finger-status-label"/>
+                        </VBox>
+                        <!-- Left Index -->
+                        <VBox fx:id="leftIndexCard" styleClass="finger-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <Label text="LEFT HAND" styleClass="finger-hand-label"/>
+                            <Label text="Index finger" styleClass="finger-name-label"/>
+                            <Label fx:id="leftIndexStatus" text="Tap to capture" styleClass="finger-status-label"/>
+                        </VBox>
+                        <!-- Right Thumb -->
+                        <VBox fx:id="rightThumbCard" styleClass="finger-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <Label text="RIGHT HAND" styleClass="finger-hand-label"/>
+                            <Label text="Thumb finger" styleClass="finger-name-label"/>
+                            <Label fx:id="rightThumbStatus" text="Tap to capture" styleClass="finger-status-label"/>
+                        </VBox>
+                        <!-- Right Index -->
+                        <VBox fx:id="rightIndexCard" styleClass="finger-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <Label text="RIGHT HAND" styleClass="finger-hand-label"/>
+                            <Label text="Index finger" styleClass="finger-name-label"/>
+                            <Label fx:id="rightIndexStatus" text="Tap to capture" styleClass="finger-status-label"/>
+                        </VBox>
+                    </GridPane>
+
+                    <!-- Scanner Status Bar inside Modal -->
+                    <HBox fx:id="modalScannerBar" alignment="CENTER_LEFT" spacing="10.0" styleClass="scanner-bar">
+                        <padding><Insets top="10.0" right="14.0" bottom="10.0" left="14.0"/></padding>
+                        <Circle fx:id="modalStatusCircle" radius="4.0" fill="#22c55e"/>
+                        <VBox HBox.hgrow="ALWAYS">
+                            <Label fx:id="modalStatusTitle" text="ZKTeco 9500 ready" styleClass="scanner-bar-title"/>
+                            <Label fx:id="scannerCountLabel" text="0 of 4 fingerprints captured" styleClass="scanner-bar-subtitle"/>
+                        </VBox>
+                        <Label fx:id="modalConnectedTag" text="CONNECTED" styleClass="scanner-connected-tag"/>
+                    </HBox>
+                </VBox>
+
+                <Label fx:id="participantModalError" textFill="#ef4444" style="-fx-font-size: 12px;"/>
+
+                <HBox alignment="CENTER_RIGHT" spacing="12.0">
+                    <Button fx:id="cancelParticipantModalBtn" text="Cancel" styleClass="btn-secondary"/>
+                    <Button fx:id="submitParticipantBtn" text="Complete enrollment" styleClass="btn-primary"/>
+                </HBox>
+            </VBox>
+        </StackPane>
+    </children>
+</StackPane>
