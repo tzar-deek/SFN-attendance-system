@@ -1,22 +1,29 @@
 package com.skillsfusionnetwork.student_attendance_sys;
 
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import javafx.util.StringConverter;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class DashboardController {
 
     // Sidebar Controls
     @FXML private VBox sidebar;
     @FXML private Button toggleSidebarBtn;
-    @FXML private VBox brandTextBox;
+    @FXML private HBox brandTextBox;
     @FXML private Label workspaceHeader;
     @FXML private Label managementHeader;
     @FXML private Button navOverviewBtn;
@@ -74,13 +81,28 @@ public class DashboardController {
     @FXML private TextField participantPhoneInput;
 
     @FXML private VBox leftThumbCard;
+    @FXML private ImageView leftThumbImg;
     @FXML private Label leftThumbStatus;
+
     @FXML private VBox leftIndexCard;
+    @FXML private ImageView leftIndexImg;
     @FXML private Label leftIndexStatus;
+
     @FXML private VBox rightThumbCard;
+    @FXML private ImageView rightThumbImg;
     @FXML private Label rightThumbStatus;
+
     @FXML private VBox rightIndexCard;
+    @FXML private ImageView rightIndexImg;
     @FXML private Label rightIndexStatus;
+
+    // Scan Pop-up Controls
+    @FXML private StackPane fingerprintScanPopupOverlay;
+    @FXML private Label scanPopupFingerTitle;
+    @FXML private Label scanPopupStatusLabel;
+    @FXML private ImageView scanPopupImageView;
+    @FXML private Button cancelScanPopupBtn;
+    @FXML private Button confirmScanPopupBtn;
 
     @FXML private HBox modalScannerBar;
     @FXML private Circle modalStatusCircle;
@@ -91,16 +113,43 @@ public class DashboardController {
     @FXML private Label participantModalError;
     @FXML private Button submitParticipantBtn;
 
+    private static final String[] FINGER_TITLES = {
+            "Left hand Thumb",
+            "Left hand Index",
+            "Right hand Thumb",
+            "Right hand Index"
+    };
+
+    private Image blackFingerprintImage;
+    private Image greenFingerprintImage;
+
     private boolean isSidebarCollapsed = false;
-    private final boolean[] currentFingerprints = new boolean[4]; // [Left Thumb, Left Index, Right Thumb, Right Index]
+    private long lastGestureToggleMs = 0L;
+    private int activeScanIndex = -1;
+    private boolean activeScanCompleted = false;
+    private PauseTransition activeScanTimer;
+    private final boolean[] currentFingerprints = new boolean[4];
 
     @FXML
     public void initialize() {
+        loadFingerprintImages();
         setupUserIdentity();
         setupSidebarNavigation();
+        setupMousepadGesture();
         setupScannerStatusBinding();
+        setupProgramComboBox();
+        setupScanPopup();
         setupModals();
         refreshDashboardUI();
+    }
+
+    private void loadFingerprintImages() {
+        blackFingerprintImage = new Image(
+                Objects.requireNonNull(getClass().getResourceAsStream("images/blackFingerPrint.png"))
+        );
+        greenFingerprintImage = new Image(
+                Objects.requireNonNull(getClass().getResourceAsStream("images/greenFingerPrint.png"))
+        );
     }
 
     private void setupUserIdentity() {
@@ -116,22 +165,7 @@ public class DashboardController {
     }
 
     private void setupSidebarNavigation() {
-        toggleSidebarBtn.setOnAction(e -> {
-            isSidebarCollapsed = !isSidebarCollapsed;
-            sidebar.setPrefWidth(isSidebarCollapsed ? 76.0 : 240.0);
-
-            setNodeVisibility(brandTextBox, !isSidebarCollapsed);
-            setNodeVisibility(workspaceHeader, !isSidebarCollapsed);
-            setNodeVisibility(managementHeader, !isSidebarCollapsed);
-            setNodeVisibility(sidebarProgramBadge, !isSidebarCollapsed);
-            setNodeVisibility(scannerStatusBox, !isSidebarCollapsed);
-            setNodeVisibility(sidebarUserBox, !isSidebarCollapsed);
-
-            navOverviewBtn.setText(isSidebarCollapsed ? "⊞" : "⊞  Overview");
-            navProgramsBtn.setText(isSidebarCollapsed ? "👥" : "👥  Programs");
-            navReportsBtn.setText(isSidebarCollapsed ? "📊" : "📊  Reports");
-            navSettingsBtn.setText(isSidebarCollapsed ? "⚙" : "⚙  Settings");
-        });
+        toggleSidebarBtn.setOnAction(e -> setSidebarCollapsed(!isSidebarCollapsed));
 
         navOverviewBtn.setOnAction(e -> switchTab(overviewPage, navOverviewBtn));
         navProgramsBtn.setOnAction(e -> switchTab(programsPage, navProgramsBtn));
@@ -145,8 +179,50 @@ public class DashboardController {
         });
     }
 
+    private void setSidebarCollapsed(boolean collapsed) {
+        isSidebarCollapsed = collapsed;
+        sidebar.setPrefWidth(isSidebarCollapsed ? 76.0 : 240.0);
+
+        setNodeVisibility(brandTextBox, !isSidebarCollapsed);
+        setNodeVisibility(workspaceHeader, !isSidebarCollapsed);
+        setNodeVisibility(managementHeader, !isSidebarCollapsed);
+        setNodeVisibility(sidebarProgramBadge, !isSidebarCollapsed);
+        setNodeVisibility(scannerStatusBox, !isSidebarCollapsed);
+        setNodeVisibility(sidebarUserBox, !isSidebarCollapsed);
+
+        navOverviewBtn.setText(isSidebarCollapsed ? "⊞" : "⊞  Overview");
+        navProgramsBtn.setText(isSidebarCollapsed ? "👥" : "👥  Programs");
+        navReportsBtn.setText(isSidebarCollapsed ? "📊" : "📊  Reports");
+        navSettingsBtn.setText(isSidebarCollapsed ? "⚙" : "⚙  Settings");
+    }
+
+    private void setupMousepadGesture() {
+        sidebar.addEventFilter(ScrollEvent.SCROLL, event -> {
+            long now = System.currentTimeMillis();
+            if (now - lastGestureToggleMs < 350) {
+                return;
+            }
+
+            double dx = event.getDeltaX();
+            double dy = event.getDeltaY();
+
+            if (dx < -25 && !isSidebarCollapsed) {
+                lastGestureToggleMs = now;
+                setSidebarCollapsed(true);
+                event.consume();
+            } else if (dx > 25 && isSidebarCollapsed) {
+                lastGestureToggleMs = now;
+                setSidebarCollapsed(false);
+                event.consume();
+            } else if (Math.abs(dy) > 35 && Math.abs(dx) < 10) {
+                lastGestureToggleMs = now;
+                setSidebarCollapsed(!isSidebarCollapsed);
+                event.consume();
+            }
+        });
+    }
+
     private void setupScannerStatusBinding() {
-        // Clicking sidebar scanner widget toggles connection state for testing
         scannerStatusBox.setOnMouseClicked(e -> {
             boolean newState = !AppState.isScannerConnected();
             AppState.setScannerConnected(newState);
@@ -177,6 +253,140 @@ public class DashboardController {
             modalConnectedTag.setText("DISCONNECTED");
             modalConnectedTag.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
         }
+    }
+
+    private void setupProgramComboBox() {
+        participantProgramCombo.setItems(AppState.getPrograms());
+
+        participantProgramCombo.setConverter(new StringConverter<AppState.Program>() {
+            @Override
+            public String toString(AppState.Program program) {
+                return program == null ? "" : program.getName();
+            }
+
+            @Override
+            public AppState.Program fromString(String string) {
+                if (string == null || string.isBlank()) return null;
+                return AppState.getPrograms().stream()
+                        .filter(p -> p.getName().equals(string))
+                        .findFirst()
+                        .orElse(null);
+            }
+        });
+
+        participantProgramCombo.setCellFactory(param -> new ListCell<AppState.Program>() {
+            @Override
+            protected void updateItem(AppState.Program program, boolean empty) {
+                super.updateItem(program, empty);
+                setText(empty || program == null ? null : program.getName());
+                setStyle("-fx-text-fill: #0f172a;");
+            }
+        });
+    }
+
+    private void setupScanPopup() {
+        cancelScanPopupBtn.setOnAction(e -> {
+            stopScanTimer();
+            activeScanIndex = -1;
+            activeScanCompleted = false;
+            setNodeVisibility(fingerprintScanPopupOverlay, false);
+        });
+
+        confirmScanPopupBtn.setOnAction(e -> {
+            stopScanTimer();
+            if (activeScanIndex >= 0 && activeScanIndex < 4) {
+                // Mark as captured whether timer finished or user clicked Done
+                currentFingerprints[activeScanIndex] = true;
+                applyFingerCardState(activeScanIndex, true);
+                updateFingerprintCountLabel();
+            }
+            activeScanIndex = -1;
+            activeScanCompleted = false;
+            setNodeVisibility(fingerprintScanPopupOverlay, false);
+        });
+    }
+
+    private void openScanPopupForFinger(int index) {
+        if (!AppState.isScannerConnected()) {
+            participantModalError.setText("Cannot scan: ZKTeco 9500 scanner is disconnected.");
+            return;
+        }
+
+        stopScanTimer();
+        participantModalError.setText("");
+        activeScanIndex = index;
+        activeScanCompleted = false;
+
+        scanPopupFingerTitle.setText(FINGER_TITLES[index]);
+        scanPopupStatusLabel.setText("Scanning fingerprint...");
+        scanPopupImageView.setImage(blackFingerprintImage);
+        setNodeVisibility(fingerprintScanPopupOverlay, true);
+
+        // Switch pop-up fingerprint icon from black to green after scan completes
+        activeScanTimer = new PauseTransition(Duration.seconds(1.2));
+        activeScanTimer.setOnFinished(evt -> {
+            activeScanCompleted = true;
+            scanPopupImageView.setImage(greenFingerprintImage);
+            scanPopupStatusLabel.setText("Fingerprint scanned! Click Done.");
+        });
+        activeScanTimer.play();
+    }
+
+    private void stopScanTimer() {
+        if (activeScanTimer != null) {
+            activeScanTimer.stop();
+        }
+    }
+
+    private void applyFingerCardState(int index, boolean captured) {
+        VBox card = getFingerCard(index);
+        ImageView img = getFingerImageView(index);
+        Label status = getFingerStatusLabel(index);
+
+        if (captured) {
+            if (!card.getStyleClass().contains("finger-card-captured")) {
+                card.getStyleClass().add("finger-card-captured");
+            }
+            img.setImage(greenFingerprintImage);
+            status.setText("Captured ✓");
+        } else {
+            card.getStyleClass().remove("finger-card-captured");
+            img.setImage(blackFingerprintImage);
+            status.setText("Tap to scan");
+        }
+    }
+
+    private void updateFingerprintCountLabel() {
+        int count = 0;
+        for (boolean b : currentFingerprints) if (b) count++;
+        scannerCountLabel.setText(count + " of 4 fingerprints captured");
+    }
+
+    private VBox getFingerCard(int index) {
+        return switch (index) {
+            case 0 -> leftThumbCard;
+            case 1 -> leftIndexCard;
+            case 2 -> rightThumbCard;
+            default -> rightIndexCard;
+        };
+    }
+
+    private ImageView getFingerImageView(int index) {
+        return switch (index) {
+            case 0 -> leftThumbImg;
+            case 1 -> leftIndexImg;
+            case 2 -> rightThumbImg;
+            default -> rightIndexImg;
+        };
+    }
+
+    private Label getFingerStatusLabel(int index) {
+        return switch (index) {
+            case 0 -> leftThumbStatus;
+            case 1 -> leftIndexStatus;
+            case 2 -> rightThumbStatus;
+            default -> rightIndexStatus;
+        };
     }
 
     private void switchTab(Node targetPage, Button activeBtn) {
@@ -223,14 +433,21 @@ public class DashboardController {
         });
 
         openParticipantModalBtn.setOnAction(e -> openParticipantModal());
-        closeParticipantModalBtn.setOnAction(e -> setNodeVisibility(participantModalOverlay, false));
-        cancelParticipantModalBtn.setOnAction(e -> setNodeVisibility(participantModalOverlay, false));
+        closeParticipantModalBtn.setOnAction(e -> {
+            stopScanTimer();
+            setNodeVisibility(fingerprintScanPopupOverlay, false);
+            setNodeVisibility(participantModalOverlay, false);
+        });
+        cancelParticipantModalBtn.setOnAction(e -> {
+            stopScanTimer();
+            setNodeVisibility(fingerprintScanPopupOverlay, false);
+            setNodeVisibility(participantModalOverlay, false);
+        });
 
-        // Fingerprint Capture (Requires scanner connection)
-        leftThumbCard.setOnMouseClicked(e -> { if (AppState.isScannerConnected()) toggleFingerprintScan(0, leftThumbCard, leftThumbStatus); });
-        leftIndexCard.setOnMouseClicked(e -> { if (AppState.isScannerConnected()) toggleFingerprintScan(1, leftIndexCard, leftIndexStatus); });
-        rightThumbCard.setOnMouseClicked(e -> { if (AppState.isScannerConnected()) toggleFingerprintScan(2, rightThumbCard, rightThumbStatus); });
-        rightIndexCard.setOnMouseClicked(e -> { if (AppState.isScannerConnected()) toggleFingerprintScan(3, rightIndexCard, rightIndexStatus); });
+        leftThumbCard.setOnMouseClicked(e -> openScanPopupForFinger(0));
+        leftIndexCard.setOnMouseClicked(e -> openScanPopupForFinger(1));
+        rightThumbCard.setOnMouseClicked(e -> openScanPopupForFinger(2));
+        rightIndexCard.setOnMouseClicked(e -> openScanPopupForFinger(3));
 
         submitParticipantBtn.setOnAction(e -> {
             String fullName = participantNameInput.getText().trim();
@@ -247,26 +464,13 @@ public class DashboardController {
             } else if (capturedCount < 4) {
                 participantModalError.setText("Please capture all 4 fingerprints using the scanner.");
             } else {
-                AppState.getParticipants().add(new AppState.Participant(fullName, selectedProgram.getName(), phone, currentFingerprints.clone()));
+                AppState.getParticipants().add(
+                        new AppState.Participant(fullName, selectedProgram.getName(), phone, currentFingerprints.clone())
+                );
                 setNodeVisibility(participantModalOverlay, false);
                 refreshDashboardUI();
             }
         });
-    }
-
-    private void toggleFingerprintScan(int index, VBox card, Label statusLabel) {
-        currentFingerprints[index] = !currentFingerprints[index];
-        if (currentFingerprints[index]) {
-            card.getStyleClass().add("finger-card-captured");
-            statusLabel.setText("Captured ✓");
-        } else {
-            card.getStyleClass().remove("finger-card-captured");
-            statusLabel.setText("Tap to capture");
-        }
-
-        int count = 0;
-        for (boolean b : currentFingerprints) if (b) count++;
-        scannerCountLabel.setText(count + " of 4 fingerprints captured");
     }
 
     private void openProgramModal() {
@@ -283,43 +487,20 @@ public class DashboardController {
         participantNameInput.clear();
         participantPhoneInput.clear();
         participantModalError.setText("");
+        activeScanIndex = -1;
+        activeScanCompleted = false;
+        setNodeVisibility(fingerprintScanPopupOverlay, false);
 
-        for (int i = 0; i < 4; i++) currentFingerprints[i] = false;
-        resetFingerCardUI(leftThumbCard, leftThumbStatus);
-        resetFingerCardUI(leftIndexCard, leftIndexStatus);
-        resetFingerCardUI(rightThumbCard, rightThumbStatus);
-        resetFingerCardUI(rightIndexCard, rightIndexStatus);
-        scannerCountLabel.setText("0 of 4 fingerprints captured");
+        for (int i = 0; i < 4; i++) {
+            currentFingerprints[i] = false;
+            applyFingerCardState(i, false);
+        }
+        updateFingerprintCountLabel();
 
         participantProgramCombo.setItems(AppState.getPrograms());
-
-        // Custom cell factory so program names render correctly in dropdown
-        participantProgramCombo.setCellFactory(param -> new ListCell<AppState.Program>() {
-            @Override
-            protected void updateItem(AppState.Program program, boolean empty) {
-                super.updateItem(program, empty);
-                setText(empty || program == null ? null : program.getName());
-            }
-        });
-
-        participantProgramCombo.setButtonCell(new ListCell<AppState.Program>() {
-            @Override
-            protected void updateItem(AppState.Program program, boolean empty) {
-                super.updateItem(program, empty);
-                setText(empty || program == null ? "Select a program" : program.getName());
-            }
-        });
-
-        if (!AppState.getPrograms().isEmpty()) {
-            participantProgramCombo.setValue(AppState.getPrograms().get(0));
-        }
+        participantProgramCombo.setValue(null);
 
         setNodeVisibility(participantModalOverlay, true);
-    }
-
-    private void resetFingerCardUI(VBox card, Label status) {
-        card.getStyleClass().remove("finger-card-captured");
-        status.setText("Tap to capture");
     }
 
     private void refreshDashboardUI() {

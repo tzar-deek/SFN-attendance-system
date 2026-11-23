@@ -326,3 +326,7 @@
     -fx-background-color: #eff6ff;
     -fx-text-fill: #1665d8;
 }
+.modal-combo .list-cell {
+    -fx-text-fill: #0f172a;
+    -fx-background-color: transparent;
+}
