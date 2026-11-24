@@ -1,6 +1,9 @@
 package com.skillsfusionnetwork.student_attendance_sys;
 
 import javafx.animation.PauseTransition;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -15,7 +18,10 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Objects;
 
 public class DashboardController {
@@ -48,8 +54,8 @@ public class DashboardController {
     // Pages
     @FXML private ScrollPane overviewPage;
     @FXML private ScrollPane programsPage;
-    @FXML private VBox reportsPage;
-    @FXML private VBox settingsPage;
+    @FXML private ScrollPane reportsPage;
+    @FXML private ScrollPane settingsPage;
 
     // Overview Metrics & Lists
     @FXML private Label programCountLabel;
@@ -59,6 +65,28 @@ public class DashboardController {
     @FXML private VBox overviewProgramsList;
     @FXML private VBox allProgramsList;
     @FXML private Button programsPageAddBtn;
+
+    // Reports Page Controls
+    @FXML private ComboBox<String> reportProgramFilterCombo;
+    @FXML private Button exportReportBtn;
+    @FXML private Label reportTotalParticipantsLabel;
+    @FXML private Label reportBiometricCompleteLabel;
+    @FXML private Label reportActiveProgramsLabel;
+    @FXML private Label reportStatusMessage;
+    @FXML private TableView<AppState.Participant> attendanceReportTable;
+    @FXML private TableColumn<AppState.Participant, String> colParticipantName;
+    @FXML private TableColumn<AppState.Participant, String> colParticipantProgram;
+    @FXML private TableColumn<AppState.Participant, String> colParticipantPhone;
+    @FXML private TableColumn<AppState.Participant, String> colFingerprintsEnrolled;
+    @FXML private TableColumn<AppState.Participant, String> colBiometricStatus;
+
+    // Settings Page Controls
+    @FXML private ToggleButton settingsScannerToggle;
+    @FXML private Button settingsToggleSidebarBtn;
+    @FXML private Label settingsStoragePathLabel;
+    @FXML private Button settingsRefreshDataBtn;
+    @FXML private Button settingsClearDataBtn;
+    @FXML private Label settingsFeedbackLabel;
 
     // Program Modal Controls
     @FXML private StackPane programModalOverlay;
@@ -140,6 +168,8 @@ public class DashboardController {
         setupProgramComboBox();
         setupScanPopup();
         setupModals();
+        setupReportsPage();
+        setupSettingsPage();
         refreshDashboardUI();
     }
 
@@ -253,6 +283,11 @@ public class DashboardController {
             modalConnectedTag.setText("DISCONNECTED");
             modalConnectedTag.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
         }
+
+        if (settingsScannerToggle != null) {
+            settingsScannerToggle.setSelected(isConnected);
+            settingsScannerToggle.setText(isConnected ? "Connected" : "Disconnected");
+        }
     }
 
     private void setupProgramComboBox() {
@@ -295,7 +330,6 @@ public class DashboardController {
         confirmScanPopupBtn.setOnAction(e -> {
             stopScanTimer();
             if (activeScanIndex >= 0 && activeScanIndex < 4) {
-                // Mark as captured whether timer finished or user clicked Done
                 currentFingerprints[activeScanIndex] = true;
                 applyFingerCardState(activeScanIndex, true);
                 updateFingerprintCountLabel();
@@ -322,7 +356,6 @@ public class DashboardController {
         scanPopupImageView.setImage(blackFingerprintImage);
         setNodeVisibility(fingerprintScanPopupOverlay, true);
 
-        // Switch pop-up fingerprint icon from black to green after scan completes
         activeScanTimer = new PauseTransition(Duration.seconds(1.2));
         activeScanTimer.setOnFinished(evt -> {
             activeScanCompleted = true;
@@ -403,6 +436,10 @@ public class DashboardController {
         if (!activeBtn.getStyleClass().contains("nav-btn-active")) {
             activeBtn.getStyleClass().add("nav-btn-active");
         }
+
+        if (targetPage == reportsPage) {
+            refreshReportsUI();
+        }
     }
 
     private void setupModals() {
@@ -473,6 +510,126 @@ public class DashboardController {
         });
     }
 
+    private void setupReportsPage() {
+        if (attendanceReportTable == null) return;
+
+        colParticipantName.setCellValueFactory(data ->
+                new SimpleStringProperty(data.getValue().getFullName()));
+        colParticipantProgram.setCellValueFactory(data ->
+                new SimpleStringProperty(data.getValue().getProgramName()));
+        colParticipantPhone.setCellValueFactory(data ->
+                new SimpleStringProperty(data.getValue().getPhone()));
+        colFingerprintsEnrolled.setCellValueFactory(data ->
+                new SimpleStringProperty(data.getValue().getCapturedFingerprintCount() + " / 4"));
+        colBiometricStatus.setCellValueFactory(data ->
+                new SimpleStringProperty(
+                        data.getValue().getCapturedFingerprintCount() == 4 ? "Verified" : "Incomplete"));
+
+        reportProgramFilterCombo.setOnAction(e -> refreshReportsUI());
+
+        exportReportBtn.setOnAction(e -> {
+            try {
+                Path outFile = Path.of("attendance-report.csv");
+                StringBuilder csv = new StringBuilder("Participant Name,Program,Phone,Fingerprints Enrolled\n");
+                for (AppState.Participant p : getFilteredParticipants()) {
+                    csv.append(escapeCsv(p.getFullName())).append(",")
+                            .append(escapeCsv(p.getProgramName())).append(",")
+                            .append(escapeCsv(p.getPhone())).append(",")
+                            .append(p.getCapturedFingerprintCount()).append("/4\n");
+                }
+                Files.writeString(outFile, csv.toString());
+                reportStatusMessage.setText("Exported report to " + outFile.toAbsolutePath());
+            } catch (Exception ex) {
+                reportStatusMessage.setText("Failed to export CSV: " + ex.getMessage());
+            }
+        });
+    }
+
+    private List<AppState.Participant> getFilteredParticipants() {
+        String selected = reportProgramFilterCombo.getValue();
+        if (selected == null || selected.equals("All programs")) {
+            return AppState.getParticipants();
+        }
+        return AppState.getParticipants().stream()
+                .filter(p -> selected.equals(p.getProgramName()))
+                .toList();
+    }
+
+    private void refreshReportsUI() {
+        if (reportProgramFilterCombo == null || attendanceReportTable == null) return;
+
+        String previousSelection = reportProgramFilterCombo.getValue();
+        ObservableList<String> filterOptions = FXCollections.observableArrayList("All programs");
+        for (AppState.Program prog : AppState.getPrograms()) {
+            if (!filterOptions.contains(prog.getName())) {
+                filterOptions.add(prog.getName());
+            }
+        }
+        reportProgramFilterCombo.setItems(filterOptions);
+        reportProgramFilterCombo.setValue(
+                previousSelection != null && filterOptions.contains(previousSelection)
+                        ? previousSelection
+                        : "All programs"
+        );
+
+        List<AppState.Participant> filtered = getFilteredParticipants();
+        attendanceReportTable.setItems(FXCollections.observableArrayList(filtered));
+
+        long completeCount = filtered.stream()
+                .filter(p -> p.getCapturedFingerprintCount() == 4)
+                .count();
+
+        reportTotalParticipantsLabel.setText(String.valueOf(filtered.size()));
+        reportBiometricCompleteLabel.setText(String.valueOf(completeCount));
+        reportActiveProgramsLabel.setText(String.valueOf(AppState.getPrograms().size()));
+    }
+
+    private String escapeCsv(String value) {
+        if (value == null) return "";
+        String escaped = value.replace("\"", "\"\"");
+        return "\"" + escaped + "\"";
+    }
+
+    private void setupSettingsPage() {
+        if (settingsScannerToggle == null) return;
+
+        if (settingsStoragePathLabel != null) {
+            settingsStoragePathLabel.setText(Path.of("attendance-data.json").toAbsolutePath().toString());
+        }
+
+        settingsScannerToggle.setSelected(AppState.isScannerConnected());
+        settingsScannerToggle.setText(AppState.isScannerConnected() ? "Connected" : "Disconnected");
+
+        settingsScannerToggle.setOnAction(e -> {
+            boolean connected = settingsScannerToggle.isSelected();
+            AppState.setScannerConnected(connected);
+            settingsScannerToggle.setText(connected ? "Connected" : "Disconnected");
+            settingsFeedbackLabel.setText("Scanner status updated to " + (connected ? "Connected" : "Disconnected") + ".");
+        });
+
+        AppState.scannerConnectedProperty().addListener((obs, oldVal, connected) -> {
+            settingsScannerToggle.setSelected(connected);
+            settingsScannerToggle.setText(connected ? "Connected" : "Disconnected");
+        });
+
+        settingsToggleSidebarBtn.setOnAction(e -> {
+            setSidebarCollapsed(!isSidebarCollapsed);
+            settingsFeedbackLabel.setText("Sidebar " + (isSidebarCollapsed ? "collapsed." : "expanded."));
+        });
+
+        settingsRefreshDataBtn.setOnAction(e -> {
+            refreshDashboardUI();
+            settingsFeedbackLabel.setText("Dashboard and report data refreshed.");
+        });
+
+        settingsClearDataBtn.setOnAction(e -> {
+            AppState.getParticipants().clear();
+            AppState.getPrograms().clear();
+            refreshDashboardUI();
+            settingsFeedbackLabel.setText("All program and participant records cleared.");
+        });
+    }
+
     private void openProgramModal() {
         programNameInput.clear();
         programVenueInput.clear();
@@ -530,6 +687,8 @@ public class DashboardController {
                 allProgramsList.getChildren().add(createProgramRowCard(prog));
             }
         }
+
+        refreshReportsUI();
     }
 
     private HBox createProgramRowCard(AppState.Program program) {

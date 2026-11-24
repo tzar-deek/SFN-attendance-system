@@ -111,77 +111,153 @@
 
                     <!-- PAGE 1: OVERVIEW -->
                     <ScrollPane fx:id="overviewPage" fitToWidth="true" styleClass="transparent-scroll">
-                        <content>
-                            <VBox spacing="24.0">
-                                <VBox spacing="4.0">
-                                    <Label text="ATTENDANCE OVERVIEW" styleClass="eyebrow-text"/>
-                                    <Label fx:id="greetingLabel" text="Good morning, Admin" styleClass="page-hero-title"/>
-                                    <Label text="Manage your programs and participant enrollment." styleClass="muted-subtitle"/>
-                                </VBox>
+                        <VBox spacing="24.0">
+                            <VBox spacing="4.0">
+                                <Label text="ATTENDANCE OVERVIEW" styleClass="eyebrow-text"/>
+                                <Label fx:id="greetingLabel" text="Good morning, Admin" styleClass="page-hero-title"/>
+                                <Label text="Manage your programs and participant enrollment." styleClass="muted-subtitle"/>
+                            </VBox>
 
-                                <HBox spacing="20.0">
-                                    <VBox spacing="8.0" HBox.hgrow="ALWAYS" styleClass="metric-card">
-                                        <Label text="REGISTERED PROGRAMS" styleClass="metric-label"/>
-                                        <Label fx:id="programCountLabel" text="0" styleClass="metric-value"/>
-                                        <Label text="Owned by your account" styleClass="metric-hint"/>
+                            <HBox spacing="20.0">
+                                <VBox spacing="8.0" HBox.hgrow="ALWAYS" styleClass="metric-card">
+                                    <Label text="REGISTERED PROGRAMS" styleClass="metric-label"/>
+                                    <Label fx:id="programCountLabel" text="0" styleClass="metric-value"/>
+                                    <Label text="Owned by your account" styleClass="metric-hint"/>
+                                </VBox>
+                                <VBox spacing="8.0" HBox.hgrow="ALWAYS" styleClass="metric-card">
+                                    <Label text="TOTAL PARTICIPANTS" styleClass="metric-label"/>
+                                    <Label fx:id="participantCountLabel" text="0" styleClass="metric-value"/>
+                                    <Label text="Across all programs" styleClass="metric-hint"/>
+                                </VBox>
+                            </HBox>
+
+                            <VBox spacing="12.0">
+                                <HBox alignment="CENTER_LEFT">
+                                    <VBox HBox.hgrow="ALWAYS">
+                                        <Label text="Your programs" styleClass="section-title"/>
+                                        <Label text="Click a program or register a new one to begin" styleClass="muted-subtitle"/>
                                     </VBox>
-                                    <VBox spacing="8.0" HBox.hgrow="ALWAYS" styleClass="metric-card">
-                                        <Label text="TOTAL PARTICIPANTS" styleClass="metric-label"/>
-                                        <Label fx:id="participantCountLabel" text="0" styleClass="metric-value"/>
-                                        <Label text="Across all programs" styleClass="metric-hint"/>
-                                    </VBox>
+                                    <Hyperlink fx:id="inlineRegisterProgramLink" text="Register new program  &gt;" styleClass="action-link"/>
                                 </HBox>
 
-                                <VBox spacing="12.0">
-                                    <HBox alignment="CENTER_LEFT">
-                                        <VBox HBox.hgrow="ALWAYS">
-                                            <Label text="Your programs" styleClass="section-title"/>
-                                            <Label text="Click a program or register a new one to begin" styleClass="muted-subtitle"/>
-                                        </VBox>
-                                        <Hyperlink fx:id="inlineRegisterProgramLink" text="Register new program  &gt;" styleClass="action-link"/>
-                                    </HBox>
-
-                                    <VBox fx:id="emptyProgramsBox" alignment="CENTER" spacing="8.0" styleClass="empty-state-card">
-                                        <Label text="No programs registered yet" styleClass="empty-title"/>
-                                        <Label text="Click '+ Register program' above to create your first course." styleClass="muted-subtitle"/>
-                                    </VBox>
-
-                                    <VBox fx:id="overviewProgramsList" spacing="12.0" visible="false" managed="false"/>
+                                <VBox fx:id="emptyProgramsBox" alignment="CENTER" spacing="8.0" styleClass="empty-state-card">
+                                    <Label text="No programs registered yet" styleClass="empty-title"/>
+                                    <Label text="Click '+ Register program' above to create your first course." styleClass="muted-subtitle"/>
                                 </VBox>
+
+                                <VBox fx:id="overviewProgramsList" spacing="12.0" visible="false" managed="false"/>
                             </VBox>
-                        </content>
+                        </VBox>
                     </ScrollPane>
 
                     <!-- PAGE 2: PROGRAMS DIRECTORY -->
                     <ScrollPane fx:id="programsPage" fitToWidth="true" visible="false" managed="false" styleClass="transparent-scroll">
-                        <content>
-                            <VBox spacing="20.0">
-                                <HBox alignment="CENTER_LEFT">
-                                    <VBox HBox.hgrow="ALWAYS" spacing="4.0">
-                                        <Label text="DIRECTORY" styleClass="eyebrow-text"/>
-                                        <Label text="Registered Programs" styleClass="page-hero-title"/>
-                                        <Label text="All active courses and enrolled participant counts." styleClass="muted-subtitle"/>
-                                    </VBox>
-                                    <Button fx:id="programsPageAddBtn" text="+ Register program" styleClass="btn-primary"/>
-                                </HBox>
-                                <VBox fx:id="allProgramsList" spacing="12.0"/>
-                            </VBox>
-                        </content>
+                        <VBox spacing="20.0">
+                            <HBox alignment="CENTER_LEFT">
+                                <VBox HBox.hgrow="ALWAYS" spacing="4.0">
+                                    <Label text="DIRECTORY" styleClass="eyebrow-text"/>
+                                    <Label text="Registered Programs" styleClass="page-hero-title"/>
+                                    <Label text="All active courses and enrolled participant counts." styleClass="muted-subtitle"/>
+                                </VBox>
+                                <Button fx:id="programsPageAddBtn" text="+ Register program" styleClass="btn-primary"/>
+                            </HBox>
+                            <VBox fx:id="allProgramsList" spacing="12.0"/>
+                        </VBox>
                     </ScrollPane>
 
                     <!-- PAGE 3: REPORTS -->
-                    <VBox fx:id="reportsPage" alignment="CENTER" spacing="12.0" visible="false" managed="false" styleClass="empty-state-card">
-                        <Label text="MANAGEMENT" styleClass="eyebrow-text"/>
-                        <Label text="Attendance Reports" styleClass="page-hero-title"/>
-                        <Label text="Exportable attendance logs and analytics will appear here in a future update." styleClass="muted-subtitle"/>
-                    </VBox>
+                    <ScrollPane fx:id="reportsPage" fitToWidth="true" visible="false" managed="false" styleClass="transparent-scroll">
+                        <VBox spacing="22.0">
+                            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                <VBox HBox.hgrow="ALWAYS" spacing="4.0">
+                                    <Label text="MANAGEMENT" styleClass="eyebrow-text"/>
+                                    <Label text="Attendance Reports" styleClass="page-hero-title"/>
+                                    <Label text="Review enrolled participants, biometric readiness, and export attendance logs." styleClass="muted-subtitle"/>
+                                </VBox>
+                                <ComboBox fx:id="reportProgramFilterCombo" prefWidth="220.0" promptText="All programs" styleClass="modal-combo"/>
+                                <Button fx:id="exportReportBtn" text="Export CSV" styleClass="btn-primary"/>
+                            </HBox>
+
+                            <HBox spacing="18.0">
+                                <VBox spacing="6.0" HBox.hgrow="ALWAYS" styleClass="metric-card">
+                                    <Label text="ENROLLED PARTICIPANTS" styleClass="metric-label"/>
+                                    <Label fx:id="reportTotalParticipantsLabel" text="0" styleClass="metric-value"/>
+                                    <Label text="Matching selected filter" styleClass="metric-hint"/>
+                                </VBox>
+                                <VBox spacing="6.0" HBox.hgrow="ALWAYS" styleClass="metric-card">
+                                    <Label text="4-FINGER COMPLETE" styleClass="metric-label"/>
+                                    <Label fx:id="reportBiometricCompleteLabel" text="0" styleClass="metric-value"/>
+                                    <Label text="All 4 prints enrolled" styleClass="metric-hint"/>
+                                </VBox>
+                                <VBox spacing="6.0" HBox.hgrow="ALWAYS" styleClass="metric-card">
+                                    <Label text="ACTIVE PROGRAMS" styleClass="metric-label"/>
+                                    <Label fx:id="reportActiveProgramsLabel" text="0" styleClass="metric-value"/>
+                                    <Label text="Available in system" styleClass="metric-hint"/>
+                                </VBox>
+                            </HBox>
+
+                            <Label fx:id="reportStatusMessage" style="-fx-font-size: 12px;" textFill="#16a34a"/>
+
+                            <VBox spacing="10.0" styleClass="metric-card">
+                                <Label text="Participant Enrollment &amp; Biometric Log" styleClass="section-title"/>
+                                <TableView fx:id="attendanceReportTable" prefHeight="340.0">
+                                    <columns>
+                                        <TableColumn fx:id="colParticipantName" text="Participant Name" prefWidth="220.0"/>
+                                        <TableColumn fx:id="colParticipantProgram" text="Program" prefWidth="220.0"/>
+                                        <TableColumn fx:id="colParticipantPhone" text="Phone (+234)" prefWidth="160.0"/>
+                                        <TableColumn fx:id="colFingerprintsEnrolled" text="Fingerprints" prefWidth="140.0"/>
+                                        <TableColumn fx:id="colBiometricStatus" text="Status" prefWidth="150.0"/>
+                                    </columns>
+                                </TableView>
+                            </VBox>
+                        </VBox>
+                    </ScrollPane>
 
                     <!-- PAGE 4: SETTINGS -->
-                    <VBox fx:id="settingsPage" alignment="CENTER" spacing="12.0" visible="false" managed="false" styleClass="empty-state-card">
-                        <Label text="MANAGEMENT" styleClass="eyebrow-text"/>
-                        <Label text="System Settings" styleClass="page-hero-title"/>
-                        <Label text="Account preferences and portal configuration will be available here." styleClass="muted-subtitle"/>
-                    </VBox>
+                    <ScrollPane fx:id="settingsPage" fitToWidth="true" visible="false" managed="false" styleClass="transparent-scroll">
+                        <VBox spacing="22.0" maxWidth="820.0">
+                            <VBox spacing="4.0">
+                                <Label text="MANAGEMENT" styleClass="eyebrow-text"/>
+                                <Label text="System Settings" styleClass="page-hero-title"/>
+                                <Label text="Configure ZKTeco 9500 scanner behavior, sidebar preferences, and local data storage." styleClass="muted-subtitle"/>
+                            </VBox>
+
+                            <VBox spacing="14.0" styleClass="metric-card">
+                                <Label text="ZKTeco 9500 Biometric Scanner" styleClass="section-title"/>
+                                <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                    <VBox HBox.hgrow="ALWAYS" spacing="2.0">
+                                        <Label text="Scanner Connection State" styleClass="field-label"/>
+                                        <Label text="Toggle scanner connectivity or test hardware status across modals." styleClass="muted-subtitle"/>
+                                    </VBox>
+                                    <ToggleButton fx:id="settingsScannerToggle" text="Connected"/>
+                                </HBox>
+                            </VBox>
+
+                            <VBox spacing="14.0" styleClass="metric-card">
+                                <Label text="Workspace &amp; Navigation" styleClass="section-title"/>
+                                <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                    <VBox HBox.hgrow="ALWAYS" spacing="2.0">
+                                        <Label text="Sidebar State" styleClass="field-label"/>
+                                        <Label text="Expand or collapse the left navigation rail (also supports two-finger mousepad swipe)." styleClass="muted-subtitle"/>
+                                    </VBox>
+                                    <Button fx:id="settingsToggleSidebarBtn" text="Toggle Sidebar" styleClass="btn-secondary"/>
+                                </HBox>
+                            </VBox>
+
+                            <VBox spacing="14.0" styleClass="metric-card">
+                                <Label text="Data Storage &amp; Reset" styleClass="section-title"/>
+                                <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                    <VBox HBox.hgrow="ALWAYS" spacing="2.0">
+                                        <Label text="Local Attendance Store" styleClass="field-label"/>
+                                        <Label fx:id="settingsStoragePathLabel" text="attendance-data.json" styleClass="muted-subtitle"/>
+                                    </VBox>
+                                    <Button fx:id="settingsRefreshDataBtn" text="Reload Data" styleClass="btn-secondary"/>
+                                    <Button fx:id="settingsClearDataBtn" text="Clear All Records" styleClass="btn-secondary"/>
+                                </HBox>
+                                <Label fx:id="settingsFeedbackLabel" style="-fx-font-size: 12px;" textFill="#16a34a"/>
+                            </VBox>
+                        </VBox>
+                    </ScrollPane>
                 </StackPane>
             </VBox>
         </center>

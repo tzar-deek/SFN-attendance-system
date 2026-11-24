@@ -31,10 +31,14 @@
         </VBox>
 
         <!-- Right Content: Scanner Graphic Card -->
+        <!-- Right Content: Scanner Graphic Card -->
         <Pane layoutX="700.0" layoutY="180.0" prefWidth="420.0" prefHeight="450.0" styleClass="scanner-card">
             <children>
-                <!-- Add your scanner image or pane elements here -->
-                <ImageView fx:id="scannerImage" layoutX="60.0" layoutY="50.0" fitHeight="300.0" fitWidth="300.0" preserveRatio="true" />
+                <ImageView fx:id="scanFinger" layoutX="0.0" layoutY="0.0" fitWidth="420.0" fitHeight="450.0" preserveRatio="false">
+                    <image>
+                        <Image url="@images/scanFinger.png"/>
+                    </image>
+                </ImageView>
             </children>
         </Pane>
     </children>
