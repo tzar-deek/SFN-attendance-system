@@ -8,11 +8,11 @@
     <children>
         <!-- Top Navigation -->
         <HBox alignment="CENTER_LEFT" layoutX="60.0" layoutY="40.0" spacing="15.0">
-        <ImageView fx:id="fingerIcon"  fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
-            <image >
-                <Image url= "@images/fingerIcon.png"/>
-            </image>
-        </ImageView>
+            <ImageView fx:id="fingerIcon" fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@images/fingerIcon.png"/>
+                </image>
+            </ImageView>
             <VBox>
                 <Label text="SFN" styleClass="logo-title" />
                 <Label text="ATTENDANCE SYSTEM" styleClass="logo-subtitle" />
@@ -30,19 +30,24 @@
             <Button fx:id="openSystemButton" mnemonicParsing="false" text="Open system  &gt;" styleClass="primary-button" />
         </VBox>
 
-        <!-- Right Content: Scanner Graphic Card & Device Status Badge -->
-        <Pane layoutX="650.0" layoutY="140.0" prefWidth="500.0" prefHeight="480.0">
+        <!-- Right Content: Scanner Graphic Card & Side Device Status Badge -->
+        <Pane layoutX="620.0" layoutY="140.0" prefWidth="540.0" prefHeight="480.0">
             <children>
-                <Pane layoutX="50.0" layoutY="40.0" prefWidth="420.0" prefHeight="410.0" styleClass="scanner-card">
+                <Pane layoutX="10.0" layoutY="35.0" prefWidth="360.0" prefHeight="410.0" styleClass="scanner-card">
                     <children>
-                        <ImageView fx:id="scannerImage" layoutX="60.0" layoutY="50.0" fitHeight="300.0" fitWidth="300.0" preserveRatio="true" />
+                        <ImageView fx:id="scannerImage" layoutX="0.0" layoutY="0.0" fitWidth="360.0" fitHeight="410.0" preserveRatio="false">
+                            <image>
+                                <Image url="@images/scanFinger.png"/>
+                            </image>
+                        </ImageView>
                     </children>
                 </Pane>
-                <!-- Connected Device Badge -->
-                <VBox layoutX="310.0" layoutY="380.0" styleClass="device-badge" prefWidth="180.0" spacing="4.0">
+
+                <!-- Connected Device Badge beside the card -->
+                <VBox layoutX="385.0" layoutY="210.0" styleClass="device-badge" prefWidth="150.0" spacing="4.0">
                     <children>
                         <Label text="CONNECTED DEVICE" styleClass="device-badge-title" />
-                        <Label text="ZKTeco 9500 Fingerprint Scanner" styleClass="device-badge-name" />
+                        <Label text="ZKTeco 9500" styleClass="device-badge-name" wrapText="true" />
                     </children>
                 </VBox>
             </children>

@@ -89,5 +89,14 @@ public class AppState {
         public String getProgramName() { return programName; }
         public String getPhone() { return phone; }
         public boolean[] getFingerprints() { return fingerprints; }
+
+        public int getCapturedFingerprintCount() {
+            if (fingerprints == null) return 0;
+            int count = 0;
+            for (boolean captured : fingerprints) {
+                if (captured) count++;
+            }
+            return count;
+        }
     }
 }
