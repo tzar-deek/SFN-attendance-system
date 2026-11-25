@@ -3,6 +3,7 @@ module com.skillsfusionnetwork.student_attendance_sys {
     requires javafx.fxml;
     requires javafx.web;
     requires atlantafx.base;
+    requires java.sql;
 
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;

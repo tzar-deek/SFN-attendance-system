@@ -152,6 +152,7 @@ public class DashboardController {
     private Image greenFingerprintImage;
 
     private boolean isSidebarCollapsed = false;
+    private boolean isRefreshingReports = false;
     private long lastGestureToggleMs = 0L;
     private int activeScanIndex = -1;
     private boolean activeScanCompleted = false;
@@ -160,6 +161,7 @@ public class DashboardController {
 
     @FXML
     public void initialize() {
+        loadDatabaseState();
         loadFingerprintImages();
         setupUserIdentity();
         setupSidebarNavigation();
@@ -171,6 +173,12 @@ public class DashboardController {
         setupReportsPage();
         setupSettingsPage();
         refreshDashboardUI();
+    }
+
+    private void loadDatabaseState() {
+        DatabaseManager.initializeDatabase();
+        AppState.getPrograms().setAll(DatabaseManager.loadAllPrograms());
+        AppState.getParticipants().setAll(DatabaseManager.loadAllParticipants());
     }
 
     private void loadFingerprintImages() {
@@ -464,7 +472,10 @@ public class DashboardController {
             String start = programStartDate.getValue() != null ? programStartDate.getValue().format(fmt) : "TBD";
             String end = programEndDate.getValue() != null ? programEndDate.getValue().format(fmt) : "TBD";
 
-            AppState.getPrograms().add(new AppState.Program(name, venue, start, end, desc));
+            AppState.Program newProgram = new AppState.Program(name, venue, start, end, desc);
+            DatabaseManager.insertProgram(newProgram);
+            AppState.getPrograms().setAll(DatabaseManager.loadAllPrograms());
+
             setNodeVisibility(programModalOverlay, false);
             refreshDashboardUI();
         });
@@ -501,9 +512,12 @@ public class DashboardController {
             } else if (capturedCount < 4) {
                 participantModalError.setText("Please capture all 4 fingerprints using the scanner.");
             } else {
-                AppState.getParticipants().add(
-                        new AppState.Participant(fullName, selectedProgram.getName(), phone, currentFingerprints.clone())
+                AppState.Participant newParticipant = new AppState.Participant(
+                        fullName, selectedProgram.getName(), phone, currentFingerprints.clone()
                 );
+                DatabaseManager.insertParticipant(newParticipant);
+                AppState.getParticipants().setAll(DatabaseManager.loadAllParticipants());
+
                 setNodeVisibility(participantModalOverlay, false);
                 refreshDashboardUI();
             }
@@ -525,7 +539,11 @@ public class DashboardController {
                 new SimpleStringProperty(
                         data.getValue().getCapturedFingerprintCount() == 4 ? "Verified" : "Incomplete"));
 
-        reportProgramFilterCombo.setOnAction(e -> refreshReportsUI());
+        reportProgramFilterCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (!isRefreshingReports) {
+                refreshReportsUI();
+            }
+        });
 
         exportReportBtn.setOnAction(e -> {
             try {
@@ -556,32 +574,45 @@ public class DashboardController {
     }
 
     private void refreshReportsUI() {
-        if (reportProgramFilterCombo == null || attendanceReportTable == null) return;
-
-        String previousSelection = reportProgramFilterCombo.getValue();
-        ObservableList<String> filterOptions = FXCollections.observableArrayList("All programs");
-        for (AppState.Program prog : AppState.getPrograms()) {
-            if (!filterOptions.contains(prog.getName())) {
-                filterOptions.add(prog.getName());
-            }
+        if (reportProgramFilterCombo == null || attendanceReportTable == null || isRefreshingReports) {
+            return;
         }
-        reportProgramFilterCombo.setItems(filterOptions);
-        reportProgramFilterCombo.setValue(
-                previousSelection != null && filterOptions.contains(previousSelection)
-                        ? previousSelection
-                        : "All programs"
-        );
 
-        List<AppState.Participant> filtered = getFilteredParticipants();
-        attendanceReportTable.setItems(FXCollections.observableArrayList(filtered));
+        isRefreshingReports = true;
+        try {
+            String previousSelection = reportProgramFilterCombo.getValue();
+            ObservableList<String> filterOptions = FXCollections.observableArrayList("All programs");
+            for (AppState.Program prog : AppState.getPrograms()) {
+                if (!filterOptions.contains(prog.getName())) {
+                    filterOptions.add(prog.getName());
+                }
+            }
 
-        long completeCount = filtered.stream()
-                .filter(p -> p.getCapturedFingerprintCount() == 4)
-                .count();
+            if (!filterOptions.equals(reportProgramFilterCombo.getItems())) {
+                reportProgramFilterCombo.setItems(filterOptions);
+            }
 
-        reportTotalParticipantsLabel.setText(String.valueOf(filtered.size()));
-        reportBiometricCompleteLabel.setText(String.valueOf(completeCount));
-        reportActiveProgramsLabel.setText(String.valueOf(AppState.getPrograms().size()));
+            String nextSelection = (previousSelection != null && filterOptions.contains(previousSelection))
+                    ? previousSelection
+                    : "All programs";
+
+            if (!nextSelection.equals(reportProgramFilterCombo.getValue())) {
+                reportProgramFilterCombo.setValue(nextSelection);
+            }
+
+            List<AppState.Participant> filtered = getFilteredParticipants();
+            attendanceReportTable.setItems(FXCollections.observableArrayList(filtered));
+
+            long completeCount = filtered.stream()
+                    .filter(p -> p.getCapturedFingerprintCount() == 4)
+                    .count();
+
+            reportTotalParticipantsLabel.setText(String.valueOf(filtered.size()));
+            reportBiometricCompleteLabel.setText(String.valueOf(completeCount));
+            reportActiveProgramsLabel.setText(String.valueOf(AppState.getPrograms().size()));
+        } finally {
+            isRefreshingReports = false;
+        }
     }
 
     private String escapeCsv(String value) {
@@ -594,7 +625,7 @@ public class DashboardController {
         if (settingsScannerToggle == null) return;
 
         if (settingsStoragePathLabel != null) {
-            settingsStoragePathLabel.setText(Path.of("attendance-data.json").toAbsolutePath().toString());
+            settingsStoragePathLabel.setText(Path.of("attendance.db").toAbsolutePath().toString());
         }
 
         settingsScannerToggle.setSelected(AppState.isScannerConnected());
@@ -618,15 +649,18 @@ public class DashboardController {
         });
 
         settingsRefreshDataBtn.setOnAction(e -> {
+            AppState.getPrograms().setAll(DatabaseManager.loadAllPrograms());
+            AppState.getParticipants().setAll(DatabaseManager.loadAllParticipants());
             refreshDashboardUI();
-            settingsFeedbackLabel.setText("Dashboard and report data refreshed.");
+            settingsFeedbackLabel.setText("Reloaded records from SQLite database.");
         });
 
         settingsClearDataBtn.setOnAction(e -> {
+            DatabaseManager.clearAllRecords();
             AppState.getParticipants().clear();
             AppState.getPrograms().clear();
             refreshDashboardUI();
-            settingsFeedbackLabel.setText("All program and participant records cleared.");
+            settingsFeedbackLabel.setText("All program and participant records cleared from SQLite.");
         });
     }
 
@@ -722,7 +756,9 @@ public class DashboardController {
         Button deleteBtn = new Button("Delete");
         deleteBtn.getStyleClass().add("btn-secondary");
         deleteBtn.setOnAction(e -> {
-            AppState.removeProgram(program);
+            DatabaseManager.deleteProgram(program.getName());
+            AppState.getPrograms().setAll(DatabaseManager.loadAllPrograms());
+            AppState.getParticipants().setAll(DatabaseManager.loadAllParticipants());
             refreshDashboardUI();
         });
 
