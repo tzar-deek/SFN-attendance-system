@@ -1,14 +1,24 @@
 package com.skillsfusionnetwork.student_attendance_sys;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseManager {
 
-    private static final String DB_URL = "jdbc:sqlite:attendance.db";
+    private static final Path DB_PATH = Path.of(
+            System.getProperty("user.home"), ".sfn-attendance", "attendance.db"
+    );
+    private static final String DB_URL = "jdbc:sqlite:" + DB_PATH.toAbsolutePath();
 
     private DatabaseManager() {
+    }
+
+    public static Path getDatabasePath() {
+        return DB_PATH.toAbsolutePath();
     }
 
     public static Connection getConnection() throws SQLException {
@@ -16,6 +26,12 @@ public class DatabaseManager {
     }
 
     public static void initializeDatabase() {
+        try {
+            Files.createDirectories(DB_PATH.getParent());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create database directory: " + e.getMessage(), e);
+        }
+
         String createProgramsTable = """
                 CREATE TABLE IF NOT EXISTS programs (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
